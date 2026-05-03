@@ -25,10 +25,22 @@
 
 <!-- 项目截图占位 -->
 
-> ![主界面截图](docs/screenshots/main-overview.png)
+> ![主界面截图](docs/screenshots/main-overview01.png)
 > *图 1：优化工作台主界面 — 输入 Prompt 后查看多维评分、结构诊断和 Before/After 对比*
 
 ---
+
+<!-- 项目截图占位 -->
+
+> ![主界面截图](docs/screenshots/main-overview02.png)
+
+<!-- 项目截图占位 -->
+
+> ![主界面截图](docs/screenshots/main-overview03.png)
+
+<!-- 项目截图占位 -->
+
+> ![主界面截图](docs/screenshots/main-overview04.png)
 
 ## 核心功能
 
