@@ -6,6 +6,26 @@ const http = axios.create({ baseURL: '/api', timeout: 120000 });
 http.interceptors.response.use(
   (res) => res,
   (err) => {
+    // 处理 422 验证错误
+    if (err.response?.status === 422) {
+      const detail = err.response.data?.detail;
+      if (Array.isArray(detail)) {
+        // Pydantic 验证错误
+        const firstError = detail[0];
+        const field = firstError.loc?.join('.') || '字段';
+        const msg = firstError.msg || '验证失败';
+
+        // 针对 prompt 字段的字数限制给出友好提示
+        if (field.includes('prompt')) {
+          if (msg.includes('greater than or equal to 10') || msg.includes('at least 10')) {
+            return Promise.reject(new Error(`Prompt 字数不足，至少需要 10 个字符`));
+          }
+        }
+
+        return Promise.reject(new Error(`优化失败：${field} - ${msg}`));
+      }
+    }
+
     const msg = err.response?.data?.message || err.message || '请求失败';
     return Promise.reject(new Error(msg));
   }

@@ -2,6 +2,7 @@ import { Input, Select, Button, Space, Form, message } from 'antd';
 import { ThunderboltOutlined } from '@ant-design/icons';
 import type { ModelInfo } from '../types';
 import { DOMAIN_LABELS } from '../types';
+import { useEffect } from 'react';
 
 const { TextArea } = Input;
 
@@ -13,6 +14,21 @@ interface PromptInputProps {
 
 export default function PromptInput({ onSubmit, loading, models }: PromptInputProps) {
   const [form] = Form.useForm();
+
+  // 在 models 加载完成后设置默认模型
+  useEffect(() => {
+    if (models.length > 0) {
+      const defaultModel = models.find(m => m.provider.toLowerCase().includes('deepseek'))?.model_name
+        || models[0]?.model_name;
+
+      if (defaultModel) {
+        form.setFieldsValue({
+          model: defaultModel,
+          language: 'zh'
+        });
+      }
+    }
+  }, [models, form]);
 
   const handleFinishFailed = (errorInfo: any) => {
     const { errorFields } = errorInfo;
@@ -52,7 +68,7 @@ export default function PromptInput({ onSubmit, loading, models }: PromptInputPr
             options={Object.entries(DOMAIN_LABELS).map(([k, v]) => ({ value: k, label: v }))}
           />
         </Form.Item>
-        <Form.Item name="language" style={{ marginBottom: 0 }} initialValue="zh">
+        <Form.Item name="language" style={{ marginBottom: 0 }}>
           <Select
             placeholder="输出语言"
             style={{ width: 140 }}
