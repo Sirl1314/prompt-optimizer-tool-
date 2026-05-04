@@ -30,13 +30,15 @@ class TokenEstimateResponse(BaseModel):
 
 class HistoryItem(BaseModel):
     id: str
+    record_id: str  # 关联的 PromptRecord ID
     title: str
     domain: str
+    model_used: str  # 使用的模型
+    version: int  # 版本号
     token_count_raw: int
     token_count_optimized: int
     status: str
     created_at: datetime
-    updated_at: datetime
 
     model_config = ConfigDict(from_attributes=True)
 

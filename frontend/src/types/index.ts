@@ -45,13 +45,15 @@ export interface PipelineResult {
 
 export interface HistoryItem {
   id: string;
+  record_id: string;
   title: string;
   domain: string;
+  model_used: string;
+  version: number;
   token_count_raw: number;
   token_count_optimized: number;
   status: string;
   created_at: string;
-  updated_at: string;
 }
 
 export interface VersionItem {

@@ -53,31 +53,71 @@ export default function HistoryPage() {
   };
 
   const columns: ColumnsType<HistoryItem> = [
-    { title: '标题', dataIndex: 'title', key: 'title', ellipsis: true },
     {
-      title: '领域', dataIndex: 'domain', key: 'domain', width: 130,
+      title: '标题',
+      dataIndex: 'title',
+      key: 'title',
+      ellipsis: true,
+      render: (text: string, record: HistoryItem) => (
+        <span>
+          {text}
+          <Tag style={{ marginLeft: 8 }}>v{record.version}</Tag>
+        </span>
+      ),
+    },
+    {
+      title: '领域',
+      dataIndex: 'domain',
+      key: 'domain',
+      width: 130,
       render: (d: string) => <Tag>{DOMAIN_LABELS[d] || d}</Tag>,
     },
     {
-      title: 'Token 数（优化前）', dataIndex: 'token_count_raw', key: 'tokens_raw', width: 110,
+      title: '使用模型',
+      dataIndex: 'model_used',
+      key: 'model_used',
+      width: 150,
+      ellipsis: true,
+      render: (model: string) => <Tag color="blue">{model}</Tag>,
+    },
+    {
+      title: 'Token 数（优化前）',
+      dataIndex: 'token_count_raw',
+      key: 'tokens_raw',
+      width: 110,
       render: (v: number) => <TokenBadge count={v} />,
     },
     {
-      title: '状态', dataIndex: 'status', key: 'status', width: 100,
+      title: 'Token 数（优化后）',
+      dataIndex: 'token_count_optimized',
+      key: 'tokens_optimized',
+      width: 110,
+      render: (v: number) => <TokenBadge count={v} />,
+    },
+    {
+      title: '状态',
+      dataIndex: 'status',
+      key: 'status',
+      width: 100,
       render: (s: string) => {
         const labels: Record<string, string> = { draft: '草稿', optimized: '已优化', archived: '已归档' };
         return <Tag color={s === 'optimized' ? 'green' : s === 'archived' ? 'default' : 'blue'}>{labels[s] || s}</Tag>;
       },
     },
     {
-      title: '更新时间', dataIndex: 'updated_at', key: 'updated_at', width: 170,
+      title: '创建时间',
+      dataIndex: 'created_at',
+      key: 'created_at',
+      width: 170,
       render: (t: string) => dayjs(t).format('YYYY-MM-DD HH:mm'),
     },
     {
-      title: '操作', key: 'actions', width: 150,
+      title: '操作',
+      key: 'actions',
+      width: 150,
       render: (_, record) => (
         <Space>
-          <Button size="small" icon={<EyeOutlined />} onClick={() => handleView(record.id)} />
+          <Button size="small" icon={<EyeOutlined />} onClick={() => handleView(record.record_id)} />
           <Popconfirm title="确认删除？" onConfirm={() => handleDelete(record.id)}>
             <Button size="small" danger icon={<DeleteOutlined />} />
           </Popconfirm>
@@ -148,6 +188,14 @@ export default function HistoryPage() {
               <Card key={v.id} size="small" style={{ marginBottom: 8 }} title={`v${v.version} - ${v.model_used}`}>
                 <p>Token 变化：{v.token_delta}</p>
                 {v.scores && <p>评分：{(v.scores as { total: number }).total}</p>}
+                {v.optimized_text && (
+                  <>
+                    <Typography.Text type="secondary">优化后 Prompt：</Typography.Text>
+                    <pre style={{ whiteSpace: 'pre-wrap', background: '#f0fff0', padding: 12, borderRadius: 4, maxHeight: 200, overflow: 'auto', marginTop: 8 }}>
+                      {v.optimized_text}
+                    </pre>
+                  </>
+                )}
               </Card>
             ))}
           </>
